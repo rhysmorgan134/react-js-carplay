@@ -1,0 +1,71 @@
+{
+  "name": "react-js-carplay",
+  "version": "2.0.2",
+  "private": false,
+  "main": "dist/Carplay.js",
+  "module": "dist/Carplay.js",
+  "repository": {
+    "type": "git"
+  },
+  "keywords": [
+    "react",
+    "carplay",
+    "apple",
+    "carlinkit"
+  ],
+  "author": "Rhys Morgan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rhysmorgan134/react-js-carplay/issues"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "dependencies": {
+    "@fontsource/montserrat": "^4.5.7",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^12.8.3",
+    "jmuxer": "^2.0.4",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-modal": "^3.14.4",
+    "react-scripts": "4.0.3",
+    "web-vitals": "^1.1.2"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-react"
+    ]
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "publish:npm": "rm -rf dist && mkdir dist && babel ./src -d dist --copy-files"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.17.6",
+    "@babel/preset-react": "^7.16.7"
+  }
+}
