@@ -1,7 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import {Typography} from "@mui/material";
 
 const Webcam = () => {
     const videoRef = useRef(null);
+    const [cameraFound, setCameraFound] = useState(false)
 
     useEffect(() => {
         getVideo();
@@ -11,6 +13,7 @@ const Webcam = () => {
         navigator.mediaDevices
             .getUserMedia({ video: { width: 800} })
             .then(stream => {
+                setCameraFound(true)
                 let video = videoRef.current;
                 video.srcObject = stream;
                 video.play();
@@ -22,9 +25,10 @@ const Webcam = () => {
 
     return (
         <div >
-            <div>
-                <button>Take a photo</button>
-                <video ref={videoRef} />
+            <div >
+                {cameraFound ?
+                    <video ref={videoRef} style={{maxWidth: '100%', height: 'auto'}}/> :
+                    <Typography>No Camera Found</Typography>}
             </div>
         </div>
     );

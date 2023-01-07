@@ -1,12 +1,8 @@
 import React, {Component} from 'react';
 import WebCam from "./webCam";
 import Modal from "react-modal";
+import {Checkbox, TextField, FormControlLabel, Grid, Box, Button} from "@mui/material";
 
-const customStyles = {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1
-};
 
 class Settings extends Component {
 
@@ -31,69 +27,55 @@ class Settings extends Component {
         const getInput = (k, v) => {
             switch (k) {
                 case 'fps':
-                    return <input type={'number'} min={10} value={v} onChange={(e) => {
+                    return <TextField type={'number'} label={k} min={10} value={v} onChange={(e) => {
                         e.preventDefault()
                         console.log(e.target.value)
                         this.props.changeValue(k, parseInt(e.target.value))
                     }}/>
                 case 'lhd':
-                    return <input type={"checkbox"} checked={v} onChange={(e) => {
-                        e.preventDefault()
-                        console.log(e.target.checked)
-                        this.props.changeValue(k, + e.target.checked)
-                    }}/>
+                    return (<FormControlLabel
+                        control={<Checkbox checked={v} onChange={(e) => {
+                            e.preventDefault()
+                            this.props.changeValue(k, e.target.checked ? 1 : 0)
+                        }}/>}
+                        label={k} />)
                 case 'kiosk':
-                    return <input type={'checkbox'} checked={v} onChange={(e) => {
-                        e.preventDefault()
-                        this.props.changeValue(k, e.target.checked)
-                    }}/>
+                    return (<FormControlLabel
+                       control={<Checkbox checked={v} onChange={(e) => {
+                            e.preventDefault()
+                            this.props.changeValue(k, e.target.checked)
+                        }}/>}
+                       label={k} />)
                 default:
-                    return <input type={'number'} value={v} onChange={(e) => {
+                    return <TextField type={'number'} label={k} value={v} onChange={(e) => {
                         e.preventDefault()
                         this.props.changeValue(k, parseInt(e.target.value))
                     }}/>
             }
         }
 
-        const single = (k, v) => {
-
-            return(
-                <div>
-                    <div style={{display: 'flex', justifyContent: 'space-between', marginTop: "5%", marginBottom: "5%"}}>
-                        <div>{k}</div>
-                        {getInput(k, v)}
-                    </div>
-                    <hr />
-                </div>
-
-            )
-        }
-
         const keys = Object.keys(this.props.settings)
 
         return (
-            <div>
-                <div>
-                    <button onClick={openWebCam}>Show webCam </button>
-                    <hr />
-                    <div style={customStyles}>
-                        {keys.map(key => single(key, this.props.settings[key]))}
-                    </div>
-                </div>
-                <div style={{marginTop: 'auto', marginLeft: 'auto', marginRight: 'auto'}}>
-                    <button style={{marginTop: 'auto', marginLeft: 'auto', marginRight: 'auto'}} onClick={() => this.props.reqReload()}>click to reload</button>
-                </div>
-                <Modal
-                    isOpen={this.state.webCam}
-                    // onAfterOpen={afterOpenModal}
-                    onRequestClose={closeWebcam}
-                    style={customStyles}
-                    contentLabel="Example Modal"
-                    ariaHideApp={true}
-                >
+            <Grid container spacing={3} sx={{height: '100%'}}>
+                <Grid item xs={3} >
+                    <Box sx={{display: 'flex',
+                        justifyContent: 'space-around',
+                        p: 1,
+                        m: 1,
+                        flexDirection: "column",
+                        height: '100%'}}>
+                        {keys.map(key => getInput(key, this.props.settings[key]))}
+                    </Box>
+                </Grid>
+                <Grid item xs={9}>
                     <WebCam />
-                </Modal>
-            </div>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button style={{marginTop: 'auto', marginLeft: 'auto', marginRight: 'auto'}} onClick={() => this.props.reqReload()}>click to reload</Button>
+                </Grid>
+
+            </Grid>
 
         );
     }

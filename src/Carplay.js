@@ -1,9 +1,12 @@
-import React, {Component} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './Carplay.css';
 import "@fontsource/montserrat";
 import JMuxer from 'jmuxer';
 import Modal from "react-modal";
 import Settings from './Settings'
+import useMediaQuery from '@mui/material/useMediaQuery';
+import {Button, Dialog} from "@mui/material";
+import { useTheme } from '@mui/material/styles';
 
 const customStyles = {
     content: {
@@ -12,61 +15,61 @@ const customStyles = {
         right: 'auto',
         bottom: 'auto',
         marginRight: '-50%',
-        minWidth: '50%',
+        minWidth: '80%',
         transform: 'translate(-50%, -50%)',
+        overflow: 'scroll'
     },
 };
 
-class Carplay extends Component {
+function Carplay ({changeSetting, settings, ws, type, touchEvent, status, reload, openModal, openModalReq, closeModalReq}) {
 
-    constructor(props) {
-        super(props)
-        this.state = {
-            height: 0,
-            width: 0,
-            mouseDown: false,
-            lastX: 0,
-            lastY: 0,
-            playing: false,
-            frameCount: 0,
-            modalOpen: false,
-            running: false,
-            webCam: false,
-        }
-    }
+    const [height, setHeight] = useState(0)
+    const [width, setWidth] = useState(0)
+    const [mouseDown, setMouseDown] = useState(false)
+    const [lastX, setLastX] = useState(0)
+    const [lastY, setLastY] = useState(0)
+    const [playing, setPlaying] = useState(false)
+    const [frameCount, setFrameCount] = useState(0)
+    const [running, setRunning] = useState(false)
+    const [webCam, setWebcam] = useState(false)
+    const [modalOpen, setModalOpen] = useState(false)
+    const [statusI, setStatusI] = useState(false)
+    const ref = useRef(null)
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-    componentDidMount() {
+    useEffect(() => {
         Modal.setAppElement(document.getElementById('main'));
-        console.log("creating carplay", this.state.settings)
+        console.log("creating carplay", settings)
         const jmuxer = new JMuxer({
             node: 'player',
             mode: 'video',
             maxDelay: 30,
-            fps: this.props.settings.fps,
+            fps: settings.fps,
             flushingTime: 100,
             debug: false
 
         });
-        const height = this.divElement.clientHeight
-        const width = this.divElement.clientWidth
 
-        this.setState({height, width}, () => {
-            console.log(this.state.height, this.state.width)
-        })
+        const height = ref.current.clientHeight
+        const width = ref.current.clientWidth
 
-        if(this.props.type === 'ws') {
-            this.props.ws.onmessage = (event) => {
-                if(!this.state.running) {
+        setHeight(height)
+        setWidth(width)
+
+        if(type === 'ws') {
+            ws.onmessage = (event) => {
+                if(!running) {
                     let video = document.getElementById('player')
                     video.play()
-                    this.setState({running: true})
+                    setRunning(true)
                 }
                 let buf = Buffer.from(event.data)
                 let video = buf.slice(4)
                 jmuxer.feed({video: new Uint8Array(video)})
             }
-        } else if(this.props.type === "socket.io") {
-            this.props.ws.on('carplay', (data) => {
+        } else if(type === "socket.io") {
+            ws.on('carplay', (data) => {
                 let buf = Buffer.from(data)
                 let duration = buf.readInt32BE(0)
                 let video = buf.slice(4)
@@ -74,131 +77,131 @@ class Carplay extends Component {
                 jmuxer.feed({video: new Uint8Array(video), duration:duration})
             })
         }
+    }, [])
+
+    useEffect(() => {
+        setModalOpen(openModal)
+    },[openModal])
+
+    const changeValue = (k, v) => {
+        changeSetting(k, v)
     }
 
-    changeValue(k, v) {
-        this.props.changeSetting(k, v)
+    const closeModal = () => {
+        setModalOpen(false)
     }
 
-    render() {
+    const handleMDown = (e) => {
+        let currentTargetRect = e.target.getBoundingClientRect();
+        let x = e.clientX - currentTargetRect.left
+        let y = e.clientY - currentTargetRect.top
+        x = x / width
+        y = y / height
+        setLastX(x)
+        setLastY(y)
+        setMouseDown(true)
+        touchEvent(14, x, y)
+    }
 
-        const openModal = () => {
-            console.log("clicked")
-            this.setState({modalOpen: true})
-        }
+    const handleMUp = (e) => {
+        let currentTargetRect = e.target.getBoundingClientRect();
+        let x = e.clientX - currentTargetRect.left
+        let y = e.clientY - currentTargetRect.top
+        x = x / width
+        y = y / height
+        setMouseDown(false)
+        touchEvent(16, x, y)
+    }
 
-        const closeModal = () => {
-            this.setState({modalOpen: false})
-        }
+    const handleMMove = (e) => {
+        let currentTargetRect = e.target.getBoundingClientRect();
+        let x = e.clientX - currentTargetRect.left
+        let y = e.clientY - currentTargetRect.top
+        x = x / width
+        y = y / height
+        touchEvent(15, x, y)
+    }
 
-        const handleMDown = (e) => {
-            let currentTargetRect = e.target.getBoundingClientRect();
-            let x = e.clientX - currentTargetRect.left
-            let y = e.clientY - currentTargetRect.top
-            x = x / this.state.width
-            y = y / this.state.height
-            this.setState({lastX: x, lastY: y})
-            this.setState({mouseDown: true})
-            this.props.touchEvent(14, x, y)
-        }
+    const handleDown = (e) => {
+        let currentTargetRect = e.target.getBoundingClientRect();
+        let x = e.touches[0].clientX - currentTargetRect.left
+        let y = e.touches[0].clientY - currentTargetRect.top
+        x = x / width
+        y = y / height
+        setLastX(x)
+        setLastY(y)
+        setMouseDown(true)
+        touchEvent(14, x, y)
+        e.preventDefault()
+    }
 
-        const handleMUp = (e) => {
-            let currentTargetRect = e.target.getBoundingClientRect();
-            let x = e.clientX - currentTargetRect.left
-            let y = e.clientY - currentTargetRect.top
-            x = x / this.state.width
-            y = y / this.state.height
-            this.setState({mouseDown: false})
-            this.props.touchEvent(16, x, y)
-        }
+    const handleUp = (e) => {
+        let x = lastX
+        let y = lastY
+        setMouseDown(false)
+        touchEvent(16, x, y)
+        e.preventDefault()
+    }
 
-        const handleMMove = (e) => {
-            let currentTargetRect = e.target.getBoundingClientRect();
-            let x = e.clientX - currentTargetRect.left
-            let y = e.clientY - currentTargetRect.top
-            x = x / this.state.width
-            y = y / this.state.height
-            this.props.touchEvent(15, x, y)
-        }
+    const openCarplay = (e) => {
+        setStatusI(true)
+    }
 
-        const handleDown = (e) => {
-            let currentTargetRect = e.target.getBoundingClientRect();
-            let x = e.touches[0].clientX - currentTargetRect.left
-            let y = e.touches[0].clientY - currentTargetRect.top
-            x = x / this.state.width
-            y = y / this.state.height
-            this.setState({lastX: x, lastY: y})
-            this.setState({mouseDown: true})
-            this.props.touchEvent(14, x, y)
-            e.preventDefault()
-        }
-        const handleUp = (e) => {
-            let x = this.state.lastX
-            let y = this.state.lastY
-            this.setState({mouseDown: false})
-            this.props.touchEvent(16, x, y)
-            e.preventDefault()
-        }
-
-        const openCarplay = (e) => {
-            this.setState({status: true})
-        }
-
-        const handleMove = (e) => {
-            let currentTargetRect = e.target.getBoundingClientRect();
-            let x = e.touches[0].clientX - currentTargetRect.left
-            let y = e.touches[0].clientY - currentTargetRect.top
-            x = x / this.state.width
-            y = y / this.state.height
-            this.props.touchEvent(15, x, y)
-        }
+    const handleMove = (e) => {
+        let currentTargetRect = e.target.getBoundingClientRect();
+        let x = e.touches[0].clientX - currentTargetRect.left
+        let y = e.touches[0].clientY - currentTargetRect.top
+        x = x / width
+        y = y / height
+        touchEvent(15, x, y)
+    }
 
 
 
         return (
             <div style={{height: '100%'}}  id={'main'}>
-                <div ref={(divElement) => {
-                    this.divElement = divElement
-                }}
+                <div ref={ref}
                      className="App"
                      onTouchStart={handleDown}
                      onTouchEnd={handleUp}
                      onTouchMove={(e) => {
-                         if (this.state.mouseDown) {
+                         if (mouseDown) {
                              handleMove(e)
                          }
                      }}
                      onMouseDown={handleMDown}
                      onMouseUp={handleMUp}
                      onMouseMove={(e) => {
-                         if (this.state.mouseDown) {
+                         if (mouseDown) {
                              handleMMove(e)
                          }
                      }}
                      style={{height: '100%', width: '100%', padding: 0, margin: 0, display: 'flex'}}>
-                    <video  style={{height: this.props.status ? "100%" : "0%"}} autoPlay muted id="player" />
-                    {this.props.status ? <div></div>
+                    <video  style={{height: status ? "100%" : "0%"}} autoPlay muted id="player" />
+                    {status ? <div></div>
                         :
                         <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>
                             <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>CONNECT IPHONE TO BEGIN CARPLAY</div>
-                            <button onClick={openModal}>Settings</button>
-                            {this.props.status ? <button onClick={openCarplay}>Open Carplay</button> : <div></div>}
+                            <Button onClick={openModalReq}>Settings</Button>
+                            {status ? <button onClick={openCarplay}>Open Carplay</button> : <div></div>}
                         </div>
                     }
                 </div>
-                <Modal
-                    isOpen={this.state.modalOpen}
+                <Dialog
+                    open={modalOpen}
                     // onAfterOpen={afterOpenModal}
-                    onRequestClose={closeModal}
-                    style={customStyles}
-                    contentLabel="Example Modal"
+                    maxWidth={'xl'}
+                    fullWidth={true}
+                    onClose={closeModalReq}
+                    contentLabel="Settings"
                     ariaHideApp={true}
+                    styles={customStyles}
+                    sx={{minWidth: '80%', minHeight:'80%'}}
                 >
-                    <Settings settings={this.props.settings} changeValue={this.changeValue} reqReload={this.props.reload}/>
-                </Modal>
+                    <Settings settings={settings} changeValue={changeValue} reqReload={reload}/>
+                </Dialog>
             </div>
         );
-    }
 }
 
 export default Carplay;

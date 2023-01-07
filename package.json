@@ -1,6 +1,6 @@
 {
   "name": "react-js-carplay",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "private": false,
   "main": "dist/Carplay.js",
   "module": "dist/Carplay.js",
@@ -23,7 +23,10 @@
     "README.md"
   ],
   "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@fontsource/montserrat": "^4.5.7",
+    "@mui/material": "^5.11.3",
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
