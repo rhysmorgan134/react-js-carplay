@@ -56,13 +56,24 @@ function Carplay ({changeSetting, settings, ws, type, touchEvent, status, reload
 
         setHeight(height)
         setWidth(width)
+        
+        let videoElement
+        let playPromise
 
         if(type === 'ws') {
             ws.onmessage = (event) => {
                 if(!running) {
-                    let video = document.getElementById('player')
-                    video.play()
-                    setRunning(true)
+                    videoElement = document.getElementById('player')
+                    if(videoElement != null) {
+                        playPromise = videoElement.play()
+                        if(playPromise !== undefined) {
+                            setRunning(true)
+                            playPromise.then(_ => {
+                            })
+                            .catch(error => {
+                            });
+                        }
+                    }
                 }
                 let buf = Buffer.from(event.data)
                 let video = buf.slice(4)
