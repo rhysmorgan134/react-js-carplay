@@ -1,6 +1,5 @@
 import _slicedToArray from '@babel/runtime/helpers/slicedToArray';
 import React, { useRef, useState, useEffect, Component } from 'react';
-import '@fontsource/montserrat';
 import JMuxer from 'jmuxer';
 import Modal from 'react-modal';
 import _classCallCheck from '@babel/runtime/helpers/classCallCheck';
@@ -2214,10 +2213,12 @@ function Carplay(_ref) {
       console.log("new status", status);
       setStatus(status);
     });
+    socket$1.emit('statusReq');
     socket$1.on('quit', function () {
       return openModalReq();
     });
     return function () {
+      console.log("cleaning");
       socket$1.off('carplay');
       socket$1.off('status');
       socket$1.off('quit');

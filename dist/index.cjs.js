@@ -4,7 +4,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 var _slicedToArray = require('@babel/runtime/helpers/slicedToArray');
 var React = require('react');
-require('@fontsource/montserrat');
 var JMuxer = require('jmuxer');
 var Modal = require('react-modal');
 var _classCallCheck = require('@babel/runtime/helpers/classCallCheck');
@@ -2231,10 +2230,12 @@ function Carplay(_ref) {
       console.log("new status", status);
       setStatus(status);
     });
+    socket$1.emit('statusReq');
     socket$1.on('quit', function () {
       return openModalReq();
     });
     return function () {
+      console.log("cleaning");
       socket$1.off('carplay');
       socket$1.off('status');
       socket$1.off('quit');

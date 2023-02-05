@@ -1,8 +1,8 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@babel/runtime/helpers/slicedToArray'), require('react'), require('@fontsource/montserrat'), require('jmuxer'), require('react-modal'), require('@babel/runtime/helpers/classCallCheck'), require('@babel/runtime/helpers/createClass'), require('@babel/runtime/helpers/inherits'), require('@babel/runtime/helpers/possibleConstructorReturn'), require('@babel/runtime/helpers/getPrototypeOf'), require('@mui/material'), require('@mui/material/useMediaQuery'), require('@mui/material/styles'), require('socket.io-client')) :
-  typeof define === 'function' && define.amd ? define(['exports', '@babel/runtime/helpers/slicedToArray', 'react', '@fontsource/montserrat', 'jmuxer', 'react-modal', '@babel/runtime/helpers/classCallCheck', '@babel/runtime/helpers/createClass', '@babel/runtime/helpers/inherits', '@babel/runtime/helpers/possibleConstructorReturn', '@babel/runtime/helpers/getPrototypeOf', '@mui/material', '@mui/material/useMediaQuery', '@mui/material/styles', 'socket.io-client'], factory) :
-  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global["react-js-carplay"] = {}, global._slicedToArray, global.React, null, global.JMuxer, global.Modal, global._classCallCheck, global._createClass, global._inherits, global._possibleConstructorReturn, global._getPrototypeOf, global.material, null, global.styles, global.io));
-})(this, (function (exports, _slicedToArray, React, montserrat, JMuxer, Modal, _classCallCheck, _createClass, _inherits, _possibleConstructorReturn, _getPrototypeOf, material, useMediaQuery, styles, io) { 'use strict';
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@babel/runtime/helpers/slicedToArray'), require('react'), require('jmuxer'), require('react-modal'), require('@babel/runtime/helpers/classCallCheck'), require('@babel/runtime/helpers/createClass'), require('@babel/runtime/helpers/inherits'), require('@babel/runtime/helpers/possibleConstructorReturn'), require('@babel/runtime/helpers/getPrototypeOf'), require('@mui/material'), require('@mui/material/useMediaQuery'), require('@mui/material/styles'), require('socket.io-client')) :
+  typeof define === 'function' && define.amd ? define(['exports', '@babel/runtime/helpers/slicedToArray', 'react', 'jmuxer', 'react-modal', '@babel/runtime/helpers/classCallCheck', '@babel/runtime/helpers/createClass', '@babel/runtime/helpers/inherits', '@babel/runtime/helpers/possibleConstructorReturn', '@babel/runtime/helpers/getPrototypeOf', '@mui/material', '@mui/material/useMediaQuery', '@mui/material/styles', 'socket.io-client'], factory) :
+  (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global["react-js-carplay"] = {}, global._slicedToArray, global.React, global.JMuxer, global.Modal, global._classCallCheck, global._createClass, global._inherits, global._possibleConstructorReturn, global._getPrototypeOf, global.material, null, global.styles, global.io));
+})(this, (function (exports, _slicedToArray, React, JMuxer, Modal, _classCallCheck, _createClass, _inherits, _possibleConstructorReturn, _getPrototypeOf, material, useMediaQuery, styles, io) { 'use strict';
 
   function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
@@ -2218,10 +2218,12 @@
         console.log("new status", status);
         setStatus(status);
       });
+      socket$1.emit('statusReq');
       socket$1.on('quit', function () {
         return openModalReq();
       });
       return function () {
+        console.log("cleaning");
         socket$1.off('carplay');
         socket$1.off('status');
         socket$1.off('quit');

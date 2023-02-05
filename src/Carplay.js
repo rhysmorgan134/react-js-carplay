@@ -1,6 +1,5 @@
 import React, {useState, useEffect, useRef} from 'react';
 import './Carplay.css';
-import "@fontsource/montserrat";
 import JMuxer from 'jmuxer';
 import Modal from "react-modal";
 import Settings from './Settings'
@@ -69,10 +68,13 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
             setStatus(status)
         })
 
+        socket.emit('statusReq')
+
         socket.on('quit', () => openModalReq())
 
 
         return () => {
+            console.log("cleaning")
             socket.off('carplay')
             socket.off('status')
             socket.off('quit')
