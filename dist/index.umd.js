@@ -2218,9 +2218,13 @@
         console.log("new status", status);
         setStatus(status);
       });
+      socket$1.on('quit', function () {
+        return openModalReq();
+      });
       return function () {
         socket$1.off('carplay');
         socket$1.off('status');
+        socket$1.off('quit');
         jmuxer.destroy();
       };
     }, []);
@@ -2452,22 +2456,20 @@
       audioData,
       channel,
       offset,
-      i,
-      decrement;
+      i;
     for (channel = 0; channel < this.option.channels; channel++) {
       audioData = audioBuffer.getChannelData(channel);
       offset = channel;
-      decrement = 50;
       for (i = 0; i < length; i++) {
         audioData[i] = this.samples[offset];
         /* fadein */
-        if (i < 50) {
-          audioData[i] = audioData[i] * i / 50;
-        }
-        /* fadeout*/
-        if (i >= length - 51) {
-          audioData[i] = audioData[i] * decrement-- / 50;
-        }
+        // if (i < 50) {
+        //     audioData[i] =  (audioData[i] * i) / 50;
+        // }
+        // /* fadeout*/
+        // if (i >= (length - 51)) {
+        //     audioData[i] =  (audioData[i] * decrement--) / 50;
+        // }
         offset += this.option.channels;
       }
     }

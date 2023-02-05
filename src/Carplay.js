@@ -69,10 +69,13 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
             setStatus(status)
         })
 
+        socket.on('quit', () => openModalReq())
+
 
         return () => {
             socket.off('carplay')
             socket.off('status')
+            socket.off('quit')
             jmuxer.destroy()
         }
     }, [])

@@ -114,13 +114,13 @@ PCMPlayer.prototype.flush = function() {
         for (i = 0; i < length; i++) {
             audioData[i] = this.samples[offset];
             /* fadein */
-            if (i < 50) {
-                audioData[i] =  (audioData[i] * i) / 50;
-            }
-            /* fadeout*/
-            if (i >= (length - 51)) {
-                audioData[i] =  (audioData[i] * decrement--) / 50;
-            }
+            // if (i < 50) {
+            //     audioData[i] =  (audioData[i] * i) / 50;
+            // }
+            // /* fadeout*/
+            // if (i >= (length - 51)) {
+            //     audioData[i] =  (audioData[i] * decrement--) / 50;
+            // }
             offset += this.option.channels;
         }
     }
