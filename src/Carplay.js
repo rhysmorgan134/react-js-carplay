@@ -181,7 +181,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
                     :
                     <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>
                         <div style={{marginTop: 'auto', marginBottom: 'auto', textAlign: 'center', flexGrow: '1'}}>CONNECT IPHONE TO BEGIN CARPLAY</div>
-                        <Button onClick={openModalReq}>Settings</Button>
+                        <Button onMouseDown={openModalReq} onTouchStart={openModalReq}>Settings</Button>
                         {status ? <button >Open Carplay</button> : <div></div>}
                     </div>
                 }

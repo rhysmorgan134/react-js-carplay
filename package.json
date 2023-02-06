@@ -1,6 +1,6 @@
 {
   "name": "react-js-carplay",
-  "version": "3.0.17",
+  "version": "3.0.18",
   "description": "React Component for node-carplay",
   "main": "dist/index.cjs.js",
   "module": "dist/index.esm.js",

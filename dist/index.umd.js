@@ -2342,7 +2342,8 @@
         flexGrow: '1'
       }
     }, "CONNECT IPHONE TO BEGIN CARPLAY"), /*#__PURE__*/React__default["default"].createElement(material.Button, {
-      onClick: openModalReq
+      onMouseDown: openModalReq,
+      onTouchStart: openModalReq
     }, "Settings"), status ? /*#__PURE__*/React__default["default"].createElement("button", null, "Open Carplay") : /*#__PURE__*/React__default["default"].createElement("div", null))), /*#__PURE__*/React__default["default"].createElement(material.Dialog, {
       open: modalOpen
       // onAfterOpen={afterOpenModal}
@@ -2487,52 +2488,52 @@
   };
 
   var socket = io__default["default"]("ws://localhost:5005");
-  var channel1 = new PCMPlayer({
-    encoding: '16bitInt',
-    channels: 1,
-    sampleRate: 16000,
-    flushingTime: 50
-  });
-  var channel2 = new PCMPlayer({
-    encoding: '16bitInt',
-    channels: 2,
-    sampleRate: 48000,
-    flushingTime: 50
-  });
-  var decodeMap = {
-    1: {
-      sampleRate: 44100,
-      channels: 2
-    },
-    2: {
-      sampleRate: 44100,
-      channels: 2
-    },
-    3: {
-      sampleRate: 8000,
-      channels: 1
-    },
-    4: {
-      sampleRate: 48000,
-      channels: 2
-    },
-    5: {
-      sampleRate: 16000,
-      channels: 1
-    },
-    6: {
-      sampleRate: 24000,
-      channels: 1
-    },
-    7: {
-      sampleRate: 16000,
-      channels: 2
-    }
-  };
   function CarplayAudio () {
     var channel1Decode = React.useRef(5);
     var channel2Decode = React.useRef(4);
     React.useEffect(function () {
+      var channel1 = new PCMPlayer({
+        encoding: '16bitInt',
+        channels: 1,
+        sampleRate: 16000,
+        flushingTime: 50
+      });
+      var channel2 = new PCMPlayer({
+        encoding: '16bitInt',
+        channels: 2,
+        sampleRate: 48000,
+        flushingTime: 50
+      });
+      var decodeMap = {
+        1: {
+          sampleRate: 44100,
+          channels: 2
+        },
+        2: {
+          sampleRate: 44100,
+          channels: 2
+        },
+        3: {
+          sampleRate: 8000,
+          channels: 1
+        },
+        4: {
+          sampleRate: 48000,
+          channels: 2
+        },
+        5: {
+          sampleRate: 16000,
+          channels: 1
+        },
+        6: {
+          sampleRate: 24000,
+          channels: 1
+        },
+        7: {
+          sampleRate: 16000,
+          channels: 2
+        }
+      };
       socket.on('audio', function (data) {
         if (data.audioType === 1) {
           if (data.decode === channel1Decode.current) {

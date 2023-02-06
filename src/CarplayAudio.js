@@ -3,54 +3,55 @@ import React, {useEffect, useRef} from "react";
 import io from "socket.io-client";
 const socket = io("ws://localhost:5005")
 
-const channel1 = new PCMPlayer({
-    encoding: '16bitInt',
-    channels: 1,
-    sampleRate: 16000,
-    flushingTime: 50
-})
-const channel2 = new PCMPlayer({
-    encoding: '16bitInt',
-    channels: 2,
-    sampleRate: 48000,
-    flushingTime: 50
-})
 
-const decodeMap = {
-    1: {
-        sampleRate: 44100,
-        channels: 2
-    },
-    2: {
-        sampleRate: 44100,
-        channels: 2
-    },
-    3: {
-        sampleRate: 8000,
-        channels: 1
-    },
-    4: {
-        sampleRate: 48000,
-        channels: 2
-    },
-    5: {
-        sampleRate: 16000,
-        channels: 1
-    },
-    6: {
-        sampleRate: 24000,
-        channels: 1
-    },
-    7: {
-        sampleRate: 16000,
-        channels: 2
-    },
-}
 export default function() {
     const channel1Decode = useRef(5)
     const channel2Decode = useRef(4)
 
     useEffect(() => {
+        const channel1 = new PCMPlayer({
+            encoding: '16bitInt',
+            channels: 1,
+            sampleRate: 16000,
+            flushingTime: 50
+        })
+        const channel2 = new PCMPlayer({
+            encoding: '16bitInt',
+            channels: 2,
+            sampleRate: 48000,
+            flushingTime: 50
+        })
+
+        const decodeMap = {
+            1: {
+                sampleRate: 44100,
+                channels: 2
+            },
+            2: {
+                sampleRate: 44100,
+                channels: 2
+            },
+            3: {
+                sampleRate: 8000,
+                channels: 1
+            },
+            4: {
+                sampleRate: 48000,
+                channels: 2
+            },
+            5: {
+                sampleRate: 16000,
+                channels: 1
+            },
+            6: {
+                sampleRate: 24000,
+                channels: 1
+            },
+            7: {
+                sampleRate: 16000,
+                channels: 2
+            },
+        }
         socket.on('audio', (data) => {
             if(data.audioType === 1) {
                 if(data.decode === channel1Decode.current) {
