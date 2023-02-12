@@ -8,6 +8,7 @@ import {Button, Dialog} from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import io from 'socket.io-client'
 const socket = io("ws://localhost:5005")
+let jmuxer
 
 
 const customStyles = {
@@ -39,7 +40,7 @@ function Carplay ({changeSetting, settings, reload, openModal, openModalReq, clo
     useEffect(() => {
         Modal.setAppElement(document.getElementById('main'));
         console.log("creating carplay", settings)
-        const jmuxer = new JMuxer({
+        jmuxer = new JMuxer({
             node: 'player',
             mode: 'video',
             maxDelay: 30,
@@ -56,11 +57,7 @@ function Carplay ({changeSetting, settings, reload, openModal, openModalReq, clo
         setWidth(width)
 
         socket.on('carplay', (data) => {
-            let buf = Buffer.from(data)
-            let duration = buf.readInt32BE(0)
-            let video = buf.slice(4)
-            //console.log("duration was: ", duration)
-            jmuxer.feed({video: new Uint8Array(video), duration:duration})
+            feed(data)
         })
 
         socket.on('status', ({status}) => {
@@ -81,6 +78,14 @@ function Carplay ({changeSetting, settings, reload, openModal, openModalReq, clo
             jmuxer.destroy()
         }
     }, [])
+
+    const feed = async (data) => {
+        let buf = Buffer.from(data)
+        let duration = buf.readInt32BE(0)
+        let video = buf.slice(4)
+        //console.log("duration was: ", duration)
+        jmuxer.feed({video: new Uint8Array(video), duration:duration})
+    }
 
     useEffect(() => {
         setModalOpen(openModal)
