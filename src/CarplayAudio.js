@@ -11,13 +11,13 @@ export default function() {
     const channel2Decode = useRef(4)
 
     useEffect(() => {
-        const channel1 = new PCMPlayer({
+        channel1 = new PCMPlayer({
             encoding: '16bitInt',
             channels: 1,
             sampleRate: 16000,
             flushingTime: 50
         })
-        const channel2 = new PCMPlayer({
+        channel2 = new PCMPlayer({
             encoding: '16bitInt',
             channels: 2,
             sampleRate: 48000,
