@@ -23,7 +23,7 @@ const customStyles = {
     },
 };
 
-function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openModalReq, closeModalReq}) {
+function Carplay ({changeSetting, settings, reload, openModal, openModalReq, closeModalReq}) {
 
     const [height, setHeight] = useState(0)
     const [width, setWidth] = useState(0)
@@ -103,7 +103,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         setLastX(x)
         setLastY(y)
         setMouseDown(true)
-        touchEvent(14, x, y)
+        socket.emit('click', {type: 14, x: x, y: y})
     }
 
     const handleMUp = (e) => {
@@ -112,8 +112,9 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let y = e.clientY - currentTargetRect.top
         x = x / width
         y = y / height
+        console.log("up")
         setMouseDown(false)
-        touchEvent(16, x, y)
+        socket.emit('click', {type: 16, x: x, y: y})
     }
 
     const handleMMove = (e) => {
@@ -122,7 +123,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let y = e.clientY - currentTargetRect.top
         x = x / width
         y = y / height
-        touchEvent(15, x, y)
+        socket.emit('click', {type: 15, x: x, y: y})
     }
 
     const handleDown = (e) => {
@@ -134,7 +135,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         setLastX(x)
         setLastY(y)
         setMouseDown(true)
-        touchEvent(14, x, y)
+        socket.emit('click', {type: 14, x: x, y: y})
         e.preventDefault()
     }
 
@@ -142,7 +143,8 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let x = lastX
         let y = lastY
         setMouseDown(false)
-        touchEvent(16, x, y)
+        console.log("up")
+        socket.emit('click', {type: 16, x: x, y: y})
         e.preventDefault()
     }
 
@@ -152,7 +154,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let y = e.touches[0].clientY - currentTargetRect.top
         x = x / width
         y = y / height
-        touchEvent(15, x, y)
+        socket.emit('click', {type: 15, x: x, y: y})
     }
 
 
