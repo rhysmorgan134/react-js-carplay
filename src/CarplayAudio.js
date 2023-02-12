@@ -94,7 +94,7 @@ export default function() {
     }
 
     const feed2= async(data) => {
-
+        channel2.feed(new Uint8Array(data.data))
     }
 
     return (
