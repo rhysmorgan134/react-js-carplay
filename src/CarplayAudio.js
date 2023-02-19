@@ -2,6 +2,8 @@ import PCMPlayer from "./pcm-player";
 import React, {useEffect, useRef} from "react";
 import io from "socket.io-client";
 const socket = io("ws://localhost:5005")
+let channel1
+let channel2
 
 
 export default function() {
@@ -9,13 +11,13 @@ export default function() {
     const channel2Decode = useRef(4)
 
     useEffect(() => {
-        const channel1 = new PCMPlayer({
+        channel1 = new PCMPlayer({
             encoding: '16bitInt',
             channels: 1,
             sampleRate: 16000,
             flushingTime: 50
         })
-        const channel2 = new PCMPlayer({
+        channel2 = new PCMPlayer({
             encoding: '16bitInt',
             channels: 2,
             sampleRate: 48000,
@@ -58,19 +60,20 @@ export default function() {
                     if(data.volume !== 0) {
                         channel1.volume(data.volume)
                     }
-                    channel1.feed(new Uint8Array(data.data))
+                    feed1(data)
+
                 } else {
                     console.log(channel1Decode.current, data.decode)
                     channel1.updateSample(decodeMap[data.decode])
                     channel1Decode.current = data.decode
-                    channel1.feed(new Uint8Array(data.data))
+                    feed1(data)
                 }
             } else if (data.audioType===2) {
                 if (data.decode === channel2Decode.current) {
                     if (data.volume !== 0) {
                         channel2.volume(data.volume)
                     }
-                    channel2.feed(new Uint8Array(data.data))
+                    feed2(data)
                 } else {
                     console.log(channel2Decode.current, data.decode)
                     channel2.updateSample(decodeMap[data.decode])
@@ -86,7 +89,13 @@ export default function() {
         }
     }, [])
 
+    const feed1= async(data) => {
+        channel1.feed(new Uint8Array(data.data))
+    }
 
+    const feed2= async(data) => {
+        channel2.feed(new Uint8Array(data.data))
+    }
 
     return (
         <div></div>

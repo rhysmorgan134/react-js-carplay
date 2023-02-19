@@ -8,6 +8,7 @@ import {Button, Dialog} from "@mui/material";
 import { useTheme } from '@mui/material/styles';
 import io from 'socket.io-client'
 const socket = io("ws://localhost:5005")
+let jmuxer
 
 
 const customStyles = {
@@ -23,7 +24,7 @@ const customStyles = {
     },
 };
 
-function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openModalReq, closeModalReq}) {
+function Carplay ({changeSetting, settings, reload, openModal, openModalReq, closeModalReq}) {
 
     const [height, setHeight] = useState(0)
     const [width, setWidth] = useState(0)
@@ -39,7 +40,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
     useEffect(() => {
         Modal.setAppElement(document.getElementById('main'));
         console.log("creating carplay", settings)
-        const jmuxer = new JMuxer({
+        jmuxer = new JMuxer({
             node: 'player',
             mode: 'video',
             maxDelay: 30,
@@ -56,11 +57,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         setWidth(width)
 
         socket.on('carplay', (data) => {
-            let buf = Buffer.from(data)
-            let duration = buf.readInt32BE(0)
-            let video = buf.slice(4)
-            //console.log("duration was: ", duration)
-            jmuxer.feed({video: new Uint8Array(video), duration:duration})
+            feed(data)
         })
 
         socket.on('status', ({status}) => {
@@ -81,6 +78,14 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
             jmuxer.destroy()
         }
     }, [])
+
+    const feed = async (data) => {
+        let buf = Buffer.from(data)
+        let duration = buf.readInt32BE(0)
+        let video = buf.slice(4)
+        //console.log("duration was: ", duration)
+        jmuxer.feed({video: new Uint8Array(video), duration:duration})
+    }
 
     useEffect(() => {
         setModalOpen(openModal)
@@ -103,7 +108,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         setLastX(x)
         setLastY(y)
         setMouseDown(true)
-        touchEvent(14, x, y)
+        socket.emit('click', {type: 14, x: x, y: y})
     }
 
     const handleMUp = (e) => {
@@ -112,8 +117,9 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let y = e.clientY - currentTargetRect.top
         x = x / width
         y = y / height
+        console.log("up")
         setMouseDown(false)
-        touchEvent(16, x, y)
+        socket.emit('click', {type: 16, x: x, y: y})
     }
 
     const handleMMove = (e) => {
@@ -122,7 +128,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let y = e.clientY - currentTargetRect.top
         x = x / width
         y = y / height
-        touchEvent(15, x, y)
+        socket.emit('click', {type: 15, x: x, y: y})
     }
 
     const handleDown = (e) => {
@@ -134,7 +140,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         setLastX(x)
         setLastY(y)
         setMouseDown(true)
-        touchEvent(14, x, y)
+        socket.emit('click', {type: 14, x: x, y: y})
         e.preventDefault()
     }
 
@@ -142,7 +148,8 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let x = lastX
         let y = lastY
         setMouseDown(false)
-        touchEvent(16, x, y)
+        console.log("up")
+        socket.emit('click', {type: 16, x: x, y: y})
         e.preventDefault()
     }
 
@@ -152,7 +159,7 @@ function Carplay ({changeSetting, settings, touchEvent, reload, openModal, openM
         let y = e.touches[0].clientY - currentTargetRect.top
         x = x / width
         y = y / height
-        touchEvent(15, x, y)
+        socket.emit('click', {type: 15, x: x, y: y})
     }
 
 
